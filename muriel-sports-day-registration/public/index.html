@@ -10,7 +10,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -544,7 +544,59 @@ document.getElementById("registrationForm")
     }
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // 1️⃣ Put your Supabase details here
+  const SUPABASE_URL = "https://iijdvfxtkirtpdynugus.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpamR2Znh0a2lydHBkeW51Z3VzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0OTc3ODcsImV4cCI6MjA4MjA3Mzc4N30.9SRwamUmfmDxVO1S9YgPhHdir1lCDxpsNygOknUwNbg";
 
+  // 2️⃣ Create Supabase connection
+  const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+  // 3️⃣ This function saves data
+  async function submitRegistration(formData) {
+    try {
+      // Save parent
+      const { data: parent, error: parentError } = await supabase
+        .from("parents")
+        .insert({
+          parentname: formData.parentName,
+          mobile: formData.mobile,
+          wing: formData.wing,
+          flat_no: formData.flat
+        })
+        .select("parentid")
+        .single();
+
+      if (parentError) throw parentError;
+
+      // Save children
+      const childrenData = formData.children.map((c, index) => ({
+        parentid: parent.parentid,
+        child_no: index + 1,
+        childname: c.name,
+        age: c.age,
+        events: c.events
+      }));
+
+      const { error: childError } = await supabase
+        .from("children")
+        .insert(childrenData);
+
+      if (childError) throw childError;
+
+      alert("✅ Registration saved successfully");
+
+    } catch (err) {
+      console.error(err);
+      alert("❌ Failed to save registration");
+    }
+  }
+</script>
 
 </body>
+
 </html>

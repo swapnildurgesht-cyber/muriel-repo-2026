@@ -16,9 +16,6 @@ exports.handler = async (event) => {
 
     const body = JSON.parse(event.body);
 
-    /* -------------------------
-       Insert Parent
-    -------------------------- */
     const { data: parent, error: parentError } = await supabase
       .from("parents")
       .insert({
@@ -30,14 +27,8 @@ exports.handler = async (event) => {
       .select("parentid")
       .single();
 
-    if (parentError) {
-      console.error(parentError);
-      throw new Error("Failed to insert parent");
-    }
+    if (parentError) throw parentError;
 
-    /* -------------------------
-       Insert Children
-    -------------------------- */
     const childrenRows = body.children.map((c, index) => ({
       parentid: parent.parentid,
       child_no: index + 1,
@@ -50,10 +41,7 @@ exports.handler = async (event) => {
       .from("children")
       .insert(childrenRows);
 
-    if (childrenError) {
-      console.error(childrenError);
-      throw new Error("Failed to insert children");
-    }
+    if (childrenError) throw childrenError;
 
     return {
       statusCode: 200,

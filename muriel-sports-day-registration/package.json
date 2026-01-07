@@ -1,6 +1,7 @@
 {
-  "type": "module",
+  "name": "muriel-sports-day-registration",
+  "version": "1.0.0",
   "dependencies": {
-    "@supabase/supabase-js": "^2.43.4"
+    "@supabase/supabase-js": "^2.0.0"
   }
 }
